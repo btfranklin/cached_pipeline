@@ -62,23 +62,27 @@ def test_pipeline(cache):
     )
     assert summary == expected_summary
 
-    # Verify that cache files were created
-    cache_files = os.listdir(TEST_CACHE_DIR)
+    # Verify that cache files were created (excluding manifest)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
     assert len(cache_files) == 5
 
     # Truncate the cache from step3 onwards
     cache.truncate_cache("step3_produce_document")
 
-    # Ensure that only two cache files remain
-    cache_files_after_truncate = os.listdir(TEST_CACHE_DIR)
+    # Ensure that only two cache files remain (excluding manifest)
+    cache_files_after_truncate = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
     assert len(cache_files_after_truncate) == 2
 
     # Re-run the pipeline (steps from step3 onwards should be recomputed)
     summary_new = run_pipeline(user_text)
     assert summary_new == expected_summary
 
-    # Verify that all cache files are recreated
-    cache_files_final = os.listdir(TEST_CACHE_DIR)
+    # Verify that all cache files are recreated (excluding manifest)
+    cache_files_final = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
     assert len(cache_files_final) == 5
 
 
@@ -120,8 +124,10 @@ def test_pipeline_with_different_input(cache):
     user_text1 = "First input from user."
     summary1 = run_pipeline(user_text1)
 
-    # Verify that cache files were created
-    cache_files_after_first_run = os.listdir(TEST_CACHE_DIR)
+    # Verify that cache files were created (excluding manifest)
+    cache_files_after_first_run = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
     num_cache_files_first_run = len(cache_files_after_first_run)
     assert num_cache_files_first_run == 5
 
@@ -129,8 +135,10 @@ def test_pipeline_with_different_input(cache):
     user_text2 = "Second input from user."
     summary2 = run_pipeline(user_text2)
 
-    # Verify that new cache files were created for the new input
-    cache_files_after_second_run = os.listdir(TEST_CACHE_DIR)
+    # Verify that new cache files were created for the new input (excluding manifest)
+    cache_files_after_second_run = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
     num_cache_files_second_run = len(cache_files_after_second_run)
     assert num_cache_files_second_run == 10  # Should have 5 new cache files
 

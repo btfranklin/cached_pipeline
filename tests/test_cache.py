@@ -26,15 +26,15 @@ def test_cache_checkpoint(cache):
     # Call the function for the first time
     result1 = test_function(3)
     assert result1 == 9
-    # Check that the cache file was created
-    cache_files = os.listdir(TEST_CACHE_DIR)
+    # Check that the cache file was created (excluding the manifest)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
     assert len(cache_files) == 1
 
     # Call the function again with the same argument
     result2 = test_function(3)
     assert result2 == 9
     # Ensure the cache file count hasn't increased
-    cache_files = os.listdir(TEST_CACHE_DIR)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
     assert len(cache_files) == 1
 
 
@@ -52,46 +52,65 @@ def test_cache_different_arguments(cache):
     assert result2 == 3
     assert result3 == 2
 
-    # Check that two cache files were created
-    cache_files = os.listdir(TEST_CACHE_DIR)
+    # Check that two cache files were created (excluding the manifest)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
     assert len(cache_files) == 2
 
 
 def test_truncate_cache(cache):
-    @cache.checkpoint(name="step1")
-    def step1():
-        return "result1"
+    # Define functions with arbitrary names
+    @cache.checkpoint(name="examine_input")
+    def examine_input():
+        return "input"
 
-    @cache.checkpoint(name="step2")
-    def step2():
-        return "result2"
+    @cache.checkpoint(name="open_document")
+    def open_document():
+        return "document"
 
-    @cache.checkpoint(name="step3")
-    def step3():
-        return "result3"
+    @cache.checkpoint(name="process_details")
+    def process_details():
+        return "details"
 
-    # Run all steps
-    _ = step1()
-    _ = step2()
-    _ = step3()
+    @cache.checkpoint(name="analyze_result")
+    def analyze_result():
+        return "result"
 
-    # Ensure all cache files are created
-    cache_files = sorted(os.listdir(TEST_CACHE_DIR))
-    assert len(cache_files) == 3
+    # Run the pipeline
+    _ = examine_input()
+    _ = open_document()
+    _ = process_details()
+    _ = analyze_result()
 
-    # Truncate cache starting from step2
-    cache.truncate_cache("step2")
+    # Check that manifest has the correct order
+    expected_order = [
+        "examine_input",
+        "open_document",
+        "process_details",
+        "analyze_result",
+    ]
+    assert cache.checkpoint_order == expected_order
 
-    # Check that cache files for step2 and step3 are removed
-    cache_files_after_truncate = sorted(os.listdir(TEST_CACHE_DIR))
-    assert len(cache_files_after_truncate) == 1
-    assert "step1" in cache_files_after_truncate[0]
+    # Truncate from "open_document"
+    cache.truncate_cache("open_document")
 
-    # Re-run steps to ensure they recompute and cache again
-    _ = step2()
-    _ = step3()
-    cache_files_final = sorted(os.listdir(TEST_CACHE_DIR))
-    assert len(cache_files_final) == 3
+    # Verify that cache files for "open_document" and subsequent checkpoints are deleted
+    remaining_checkpoints = cache.list_checkpoints()
+    assert remaining_checkpoints == ["examine_input"]
+
+    # Verify that cache files are as expected (excluding the manifest)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
+    # There should be cache files only for 'examine_input'
+    assert len(cache_files) == 1
+    assert cache_files[0].startswith("examine_input__")
+
+    # Re-run the truncated steps
+    _ = open_document()
+    _ = process_details()
+    _ = analyze_result()
+
+    # Verify that the cache is rebuilt
+    remaining_checkpoints = cache.list_checkpoints()
+    assert remaining_checkpoints == expected_order
 
 
 def test_cache_with_complex_arguments(cache):
@@ -117,3 +136,33 @@ def test_cache_pickleable_objects(cache):
 
     with pytest.raises(Exception):
         non_pickleable_function()
+
+
+def test_clear_cache(cache):
+    @cache.checkpoint(name="step1")
+    def step1():
+        return "result1"
+
+    @cache.checkpoint(name="step2")
+    def step2():
+        return "result2"
+
+    # Run steps
+    _ = step1()
+    _ = step2()
+
+    # Ensure cache files are created (excluding manifest)
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
+    assert len(cache_files) == 2
+
+    # Clear the cache
+    cache.clear_cache()
+
+    # Verify that cache files are deleted (excluding manifest)
+    cache_files_after_clear = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
+    assert len(cache_files_after_clear) == 0
+
+    # Verify that manifest is empty
+    assert cache.checkpoint_order == []
