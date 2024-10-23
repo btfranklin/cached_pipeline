@@ -1,0 +1,27 @@
+[project]
+name = "cached_pipeline"
+version = "0.1.0"
+description = "A package for caching repeat runs of pipelines that have expensive operations along the way"
+authors = [
+    {name = "B.T. Franklin", email = "brandon.franklin@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.build]
+excludes = ["tests/**"]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=8.3.1",
+    "flake8>=7.1.0",
+]
