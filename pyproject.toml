@@ -5,7 +5,9 @@ description = "A package for caching repeat runs of pipelines that have expensiv
 authors = [
     {name = "B.T. Franklin", email = "brandon.franklin@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "click>=8.1.7",
+]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
@@ -25,3 +27,6 @@ dev = [
     "pytest>=8.3.1",
     "flake8>=7.1.0",
 ]
+
+[project.scripts]
+cached-pipeline = "cached_pipeline.cli:cli"
