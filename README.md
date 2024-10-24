@@ -48,16 +48,25 @@ cache = Cache(cache_dir="my_cache_directory")
 
 ### Decorating Functions with `@cache.checkpoint`
 
-Use the `@cache.checkpoint(name="checkpoint_name")` decorator to cache the outputs of your functions:
+Use the `@cache.checkpoint()` decorator to cache the outputs of your functions:
 
 ```python
-@cache.checkpoint(name="step1_user_input")
+@cache.checkpoint()
 def step1_user_input(user_text):
     # Your code here
     return user_text
 ```
 
-- **`name`**: The checkpoint name used in caching. It should be unique for each function.
+By default, the checkpoint name is the name of the function being decorated. If you wish to specify a custom name, you can pass it as an argument:
+
+```python
+@cache.checkpoint(name="custom_checkpoint_name")
+def my_function(...):
+    # Your code here
+    pass
+```
+
+This flexibility allows you to simplify your code and reduce redundancy when the function name suffices as a unique identifier.
 
 ### Building a Pipeline
 

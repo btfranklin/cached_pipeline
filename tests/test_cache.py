@@ -19,7 +19,7 @@ def cache():
 
 def test_cache_checkpoint(cache):
     # Define a sample function to test caching
-    @cache.checkpoint(name="test_function")
+    @cache.checkpoint()
     def test_function(x):
         return x * x
 
@@ -38,8 +38,46 @@ def test_cache_checkpoint(cache):
     assert len(cache_files) == 1
 
 
+def test_custom_checkpoint_name(cache):
+    @cache.checkpoint(name="custom_checkpoint_name")
+    def test_function(x):
+        return x * 2
+
+    # Call the function for the first time
+    result1 = test_function(5)
+    assert result1 == 10
+
+    # Verify that the checkpoint name is 'custom_checkpoint_name'
+    assert cache.checkpoint_order == ["custom_checkpoint_name"]
+
+    # Check that the cache file was created with the custom name
+    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
+    assert len(cache_files) == 1
+    assert cache_files[0].startswith("custom_checkpoint_name__")
+
+    # Call the function again with the same argument to test cache retrieval
+    result2 = test_function(5)
+    assert result2 == 10
+
+    # Ensure no new cache files were created
+    cache_files_after = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
+    assert len(cache_files_after) == 1
+
+    # Call the function with a different argument
+    result3 = test_function(6)
+    assert result3 == 12
+
+    # Verify that a new cache file was created for the new input
+    cache_files_final = [
+        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+    ]
+    assert len(cache_files_final) == 2
+
+
 def test_cache_different_arguments(cache):
-    @cache.checkpoint(name="test_function")
+    @cache.checkpoint()
     def test_function(x):
         return x + 1
 
@@ -59,19 +97,19 @@ def test_cache_different_arguments(cache):
 
 def test_truncate_cache(cache):
     # Define functions with arbitrary names
-    @cache.checkpoint(name="examine_input")
+    @cache.checkpoint()
     def examine_input():
         return "input"
 
-    @cache.checkpoint(name="open_document")
+    @cache.checkpoint()
     def open_document():
         return "document"
 
-    @cache.checkpoint(name="process_details")
+    @cache.checkpoint()
     def process_details():
         return "details"
 
-    @cache.checkpoint(name="analyze_result")
+    @cache.checkpoint()
     def analyze_result():
         return "result"
 
@@ -114,7 +152,7 @@ def test_truncate_cache(cache):
 
 
 def test_cache_with_complex_arguments(cache):
-    @cache.checkpoint(name="complex_function")
+    @cache.checkpoint()
     def complex_function(a, b):
         return a, b  # Return a tuple of the arguments
 
@@ -130,7 +168,7 @@ def test_cache_with_complex_arguments(cache):
 
 
 def test_cache_pickleable_objects(cache):
-    @cache.checkpoint(name="non_pickleable_function")
+    @cache.checkpoint()
     def non_pickleable_function():
         return lambda x: x * x  # Functions are not pickleable
 
@@ -139,11 +177,11 @@ def test_cache_pickleable_objects(cache):
 
 
 def test_clear_cache(cache):
-    @cache.checkpoint(name="step1")
+    @cache.checkpoint()
     def step1():
         return "result1"
 
-    @cache.checkpoint(name="step2")
+    @cache.checkpoint()
     def step2():
         return "result2"
 

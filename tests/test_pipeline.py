@@ -18,26 +18,26 @@ def cache():
 
 def test_pipeline(cache):
     # Re-define the pipeline functions using the test cache
-    @cache.checkpoint(name="step1_user_input")
+    @cache.checkpoint()
     def step1_user_input(user_text):
         return user_text
 
-    @cache.checkpoint(name="step2_enhance_text")
+    @cache.checkpoint()
     def step2_enhance_text(text):
         enhanced_text = text.upper()
         return enhanced_text
 
-    @cache.checkpoint(name="step3_produce_document")
+    @cache.checkpoint()
     def step3_produce_document(enhanced_text):
         document = f"Document based on: {enhanced_text}"
         return document
 
-    @cache.checkpoint(name="step4_generate_additional_documents")
+    @cache.checkpoint()
     def step4_generate_additional_documents(document):
         documents = [document + f" - Version {i}" for i in range(3)]
         return documents
 
-    @cache.checkpoint(name="step5_summarize_documents")
+    @cache.checkpoint()
     def step5_summarize_documents(documents):
         summary = f"Summary of documents: {', '.join(documents)}"
         return summary
@@ -88,26 +88,26 @@ def test_pipeline(cache):
 
 def test_pipeline_with_different_input(cache):
     # Define the pipeline functions using the test cache
-    @cache.checkpoint(name="step1_user_input")
+    @cache.checkpoint()
     def step1_user_input(user_text):
         return user_text
 
-    @cache.checkpoint(name="step2_enhance_text")
+    @cache.checkpoint()
     def step2_enhance_text(text):
         enhanced_text = text.upper()
         return enhanced_text
 
-    @cache.checkpoint(name="step3_produce_document")
+    @cache.checkpoint()
     def step3_produce_document(enhanced_text):
         document = f"Document based on: {enhanced_text}"
         return document
 
-    @cache.checkpoint(name="step4_generate_additional_documents")
+    @cache.checkpoint()
     def step4_generate_additional_documents(document):
         documents = [document + f" - Version {i}" for i in range(3)]
         return documents
 
-    @cache.checkpoint(name="step5_summarize_documents")
+    @cache.checkpoint()
     def step5_summarize_documents(documents):
         summary = f"Summary of documents: {', '.join(documents)}"
         return summary

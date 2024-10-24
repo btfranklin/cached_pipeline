@@ -17,27 +17,29 @@ class Cache:
         else:
             self.checkpoint_order = []
 
-    def checkpoint(self, name):
+    def checkpoint(self, name=None):
         def decorator(func):
+            checkpoint_name = name or func.__name__
+
             @wraps(func)
             def wrapper(*args, **kwargs):
                 # Create a unique key based on the checkpoint name and function arguments
-                key_input = (name, args, kwargs)
+                key_input = (checkpoint_name, args, kwargs)
                 key_hash = hashlib.md5(pickle.dumps(key_input)).hexdigest()
-                cache_filename = f"{name}__{key_hash}.pkl"
+                cache_filename = f"{checkpoint_name}__{key_hash}.pkl"
                 cache_path = os.path.join(self.cache_dir, cache_filename)
                 if os.path.exists(cache_path):
                     with open(cache_path, "rb") as f:
                         result = pickle.load(f)
-                    print(f"[{name}] Loaded result from cache.")
+                    print(f"[{checkpoint_name}] Loaded result from cache.")
                 else:
                     result = func(*args, **kwargs)
                     with open(cache_path, "wb") as f:
                         pickle.dump(result, f)
-                    print(f"[{name}] Computed result and saved to cache.")
+                    print(f"[{checkpoint_name}] Computed result and saved to cache.")
                 # Record the checkpoint name if not already recorded
-                if name not in self.checkpoint_order:
-                    self.checkpoint_order.append(name)
+                if checkpoint_name not in self.checkpoint_order:
+                    self.checkpoint_order.append(checkpoint_name)
                     with open(self.manifest_path, "w") as f:
                         json.dump(self.checkpoint_order, f)
                 return result
