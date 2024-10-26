@@ -1,10 +1,10 @@
-# Cached Pipeline
+# Pickled Pipeline
 
 A Python package for caching repeat runs of pipelines that have expensive operations along the way.
 
 ## Overview
 
-`cached_pipeline` provides a simple and elegant way to cache the outputs of functions within a pipeline, especially when those functions involve expensive computations, such as calls to Large Language Models (LLMs) or other resource-intensive operations. By caching intermediate results, you can save time and computational resources during iterative development and testing.
+`pickled_pipeline` provides a simple and elegant way to cache the outputs of functions within a pipeline, especially when those functions involve expensive computations, such as calls to Large Language Models (LLMs) or other resource-intensive operations. By caching intermediate results, you can save time and computational resources during iterative development and testing.
 
 ## Features
 
@@ -18,28 +18,28 @@ A Python package for caching repeat runs of pipelines that have expensive operat
 
 ### Using PDM
 
-`cached_pipeline` can be installed using PDM:
+`pickled_pipeline` can be installed using PDM:
 
 ```bash
-pdm add cached_pipeline
+pdm add pickled_pipeline
 ```
 
 ### Using pip
 
-Alternatively, you can install `cached_pipeline` using pip:
+Alternatively, you can install `pickled_pipeline` using pip:
 
 ```bash
-pip install cached_pipeline
+pip install pickled_pipeline
 ```
 
 ## Usage
 
 ### Importing the Cache Class
 
-First, import the `Cache` class from the `cached_pipeline` package and create an instance of it:
+First, import the `Cache` class from the `pickled_pipeline` package and create an instance of it:
 
 ```python
-from cached_pipeline import Cache
+from pickled_pipeline import Cache
 
 cache = Cache(cache_dir="my_cache_directory")
 ```
@@ -131,7 +131,7 @@ This will remove cached results from `"step3_produce_document"` onwards, forcing
 ### Full Pipeline Example
 
 ```python
-from cached_pipeline import Cache
+from pickled_pipeline import Cache
 
 cache = Cache(cache_dir="my_cache_directory")
 

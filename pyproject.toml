@@ -1,5 +1,5 @@
 [project]
-name = "cached_pipeline"
+name = "pickled_pipeline"
 version = "0.1.0"
 description = "A package for caching repeat runs of pipelines that have expensive operations along the way"
 authors = [
@@ -29,4 +29,4 @@ dev = [
 ]
 
 [project.scripts]
-cached-pipeline = "cached_pipeline.cli:cli"
+pickled-pipeline = "pickled_pipeline.cli:cli"

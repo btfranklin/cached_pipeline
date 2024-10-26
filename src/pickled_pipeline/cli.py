@@ -4,7 +4,7 @@ from .cache import Cache
 
 @click.group()
 def cli():
-    """CLI for managing cached_pipeline cache."""
+    """CLI for managing pickled_pipeline cache."""
     pass
 
 

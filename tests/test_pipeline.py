@@ -1,7 +1,7 @@
 import os
 import shutil
 import pytest
-from cached_pipeline import Cache
+from pickled_pipeline import Cache
 
 TEST_CACHE_DIR = "test_pipeline_cache"
 
