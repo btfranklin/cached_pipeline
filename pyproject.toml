@@ -11,6 +11,19 @@ dependencies = [
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/btfranklin/pickled_pipeline"
+Issues = "https://github.com/btfranklin/pickled_pipeline/issues"
+Changelog = "https://github.com/btfranklin/pickled_pipeline/releases"
+Repository = "https://github.com/btfranklin/pickled_pipeline.git"
 
 [build-system]
 requires = ["pdm-backend"]
