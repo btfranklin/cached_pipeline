@@ -17,17 +17,30 @@ class Cache:
         else:
             self.checkpoint_order = []
 
-    def checkpoint(self, name=None):
+    def checkpoint(self, name=None, exclude_args=None):
+        if exclude_args is None:
+            exclude_args = []
+
         def decorator(func):
             checkpoint_name = name or func.__name__
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                # Create a unique key based on the checkpoint name and function arguments
-                key_input = (checkpoint_name, args, kwargs)
+                # Map arguments to their names
+                arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
+                args_dict = dict(zip(arg_names, args))
+                args_dict.update(kwargs)
+
+                # Remove excluded arguments
+                for arg in exclude_args:
+                    args_dict.pop(arg, None)
+
+                # Create a unique key based on the checkpoint name and filtered arguments
+                key_input = (checkpoint_name, args_dict)
                 key_hash = hashlib.md5(pickle.dumps(key_input)).hexdigest()
                 cache_filename = f"{checkpoint_name}__{key_hash}.pkl"
                 cache_path = os.path.join(self.cache_dir, cache_filename)
+
                 if os.path.exists(cache_path):
                     with open(cache_path, "rb") as f:
                         result = pickle.load(f)
@@ -37,6 +50,7 @@ class Cache:
                     with open(cache_path, "wb") as f:
                         pickle.dump(result, f)
                     print(f"[{checkpoint_name}] Computed result and saved to cache.")
+
                 # Record the checkpoint name if not already recorded
                 if checkpoint_name not in self.checkpoint_order:
                     self.checkpoint_order.append(checkpoint_name)
