@@ -1,23 +1,13 @@
+"""
+Tests that focus on how the caching mechanism integrates with a pipeline of functions,
+ensuring that the cache works correctly in a real-world scenario involving multiple steps.
+"""
+
 import os
-import shutil
-import pytest
-from pickled_pipeline import Cache
-
-TEST_CACHE_DIR = "test_pipeline_cache"
-
-
-@pytest.fixture(scope="function")
-def cache():
-    # Set up: Create a Cache instance with a test cache directory
-    cache = Cache(cache_dir=TEST_CACHE_DIR)
-    yield cache
-    # Tear down: Remove the test cache directory after each test
-    if os.path.exists(TEST_CACHE_DIR):
-        shutil.rmtree(TEST_CACHE_DIR)
 
 
 def test_pipeline(cache):
-    # Re-define the pipeline functions using the test cache
+    # Define the pipeline functions using the test cache
     @cache.checkpoint()
     def step1_user_input(user_text):
         return user_text
@@ -63,7 +53,7 @@ def test_pipeline(cache):
     assert summary == expected_summary
 
     # Verify that cache files were created (excluding manifest)
-    cache_files = [f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"]
+    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
     assert len(cache_files) == 5
 
     # Truncate the cache from step3 onwards
@@ -71,7 +61,7 @@ def test_pipeline(cache):
 
     # Ensure that only two cache files remain (excluding manifest)
     cache_files_after_truncate = [
-        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
     ]
     assert len(cache_files_after_truncate) == 2
 
@@ -81,7 +71,7 @@ def test_pipeline(cache):
 
     # Verify that all cache files are recreated (excluding manifest)
     cache_files_final = [
-        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
     ]
     assert len(cache_files_final) == 5
 
@@ -126,7 +116,7 @@ def test_pipeline_with_different_input(cache):
 
     # Verify that cache files were created (excluding manifest)
     cache_files_after_first_run = [
-        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
     ]
     num_cache_files_first_run = len(cache_files_after_first_run)
     assert num_cache_files_first_run == 5
@@ -137,7 +127,7 @@ def test_pipeline_with_different_input(cache):
 
     # Verify that new cache files were created for the new input (excluding manifest)
     cache_files_after_second_run = [
-        f for f in os.listdir(TEST_CACHE_DIR) if f != "cache_manifest.json"
+        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
     ]
     num_cache_files_second_run = len(cache_files_after_second_run)
     assert num_cache_files_second_run == 10  # Should have 5 new cache files

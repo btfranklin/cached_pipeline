@@ -82,6 +82,8 @@ def my_function(unpickleable_arg, other_arg):
 
 - **`exclude_args`**: A list of argument names (as strings) to exclude from the cache key. This is useful when certain arguments cannot be pickled or should not influence caching.
 
+**Warning**: Excluding arguments that affect the function's output can lead to incorrect caching behavior. The cache will return the result based on the included arguments, ignoring changes in the excluded arguments. Only exclude arguments that do not influence the function's output, such as unpickleable objects or instances that do not affect computation.
+
 ### Building a Pipeline
 
 Here's an example of how to build a pipeline using cached functions:
