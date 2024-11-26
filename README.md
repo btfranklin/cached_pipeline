@@ -146,15 +146,90 @@ if __name__ == "__main__":
     print(summary)
 ```
 
-### Truncating the Cache
+## Command-Line Interface (CLI)
 
-If you need to recompute parts of the pipeline, you can truncate the cache from a specific checkpoint:
+`pickled_pipeline` provides a command-line interface to manage the cache conveniently without modifying your code. This is particularly useful during development and testing when you might need to clear or truncate the cache to rerun parts of your pipeline.
 
-```python
-cache.truncate_cache("step3_produce_document")
+### Available Commands
+
+- **truncate**: Truncate the cache from a specific checkpoint onwards.
+- **clear**: Clear the entire cache.
+- **list**: List all checkpoints currently in the cache.
+
+### CLI Usage
+
+When using PDM, you can access the CLI using `pdm run`:
+
+```bash
+# Truncate cache from a specific checkpoint
+pdm run pickled-pipeline truncate <checkpoint_name>
+
+# Clear the entire cache
+pdm run pickled-pipeline clear
+
+# List all checkpoints
+pdm run pickled-pipeline list
 ```
 
-This will remove cached results from `"step3_produce_document"` onwards, forcing the pipeline to recompute those steps the next time it's run.
+**Example:**
+
+```bash
+pdm run pickled-pipeline truncate step3_produce_document
+```
+
+### Options
+
+All commands accept the following optional parameter:
+
+- **`--cache-dir`**: Specify the directory where cache files are stored. If not provided, it defaults to `"pipeline_cache"`.
+
+**Example with `--cache-dir`:**
+
+```bash
+pdm run pickled-pipeline truncate step3_produce_document --cache-dir="my_cache_directory"
+```
+
+### Example Workflow
+
+1. **Run your pipeline:**
+
+   ```bash
+   pdm run python your_pipeline_script.py
+   ```
+
+2. **List cached checkpoints:**
+
+   ```bash
+   pdm run pickled-pipeline list
+   ```
+
+   **Output:**
+
+   ```text
+   Checkpoints in cache:
+   - step1_user_input
+   - step2_enhance_text
+   - step3_produce_document
+   - step4_generate_additional_documents
+   - step5_summarize_documents
+   ```
+
+3. **Truncate cache from a specific checkpoint:**
+
+   If you want to modify the behavior starting from `step3_produce_document`, truncate the cache from that point:
+
+   ```bash
+   pdm run pickled-pipeline truncate step3_produce_document
+   ```
+
+4. **Rerun your pipeline:**
+
+   ```bash
+   pdm run python your_pipeline_script.py
+   ```
+
+   Steps from `step3_produce_document` onwards will be recomputed.
+
 
 ## Examples
 
