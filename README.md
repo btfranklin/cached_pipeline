@@ -230,7 +230,6 @@ pdm run pickled-pipeline truncate step3_produce_document --cache-dir="my_cache_d
 
    Steps from `step3_produce_document` onwards will be recomputed.
 
-
 ## Examples
 
 ### Full Pipeline Example
