@@ -1,5 +1,7 @@
 # Pickled Pipeline
 
+![Pickled Pipeline banner](https://raw.githubusercontent.com/btfranklin/pickled_pipeline/main/.github/social%20preview/pickled_pipeline_social_preview.jpg "Pickled Pipeline")
+
 [![Build Status](https://github.com/btfranklin/pickled_pipeline/actions/workflows/python-package.yml/badge.svg)](https://github.com/btfranklin/pickled_pipeline/actions/workflows/python-package.yml) [![Supports Python versions 3.10+](https://img.shields.io/pypi/pyversions/pickled_pipeline.svg)](https://pypi.python.org/pypi/pickled_pipeline)
 
 A Python package for caching repeat runs of pipelines that have expensive operations along the way.
